@@ -14,9 +14,6 @@ src/
     └─ JsonUtil.java
 
 Wzorce:
-
 Singleton – GameSession (jedna gra).
-
 DTO – Move, Board → to co idzie w JSON.
-
 Observer (wersja prymitywna) – serwer powiadamia dwóch klientów o zmianie plans
