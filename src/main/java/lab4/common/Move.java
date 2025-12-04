@@ -3,7 +3,7 @@ package lab4.common;
 public class Move {
     public int x;
     public int y;
-    public int player; // 1 – black, 2 – white
+    public int player;
 
     public Move() {}
 
