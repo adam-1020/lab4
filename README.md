@@ -17,8 +17,11 @@ src/
 │    └─ GameSession.java
 
 └─ common/
+
     ├─ Board.java
+
     ├─ Move.java
+
     └─ JsonUtil.java
 
 Wzorce:
