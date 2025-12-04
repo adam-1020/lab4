@@ -1,10 +1,10 @@
 ```mermaid
 classDiagram
-direction TB
+    direction TB
 
-    %% ======================
-    %% COMMON
-    %% ======================
+%% ======================
+%% COMMON
+%% ======================
     class Move {
         <<DTO>>
         + int row
@@ -50,9 +50,9 @@ direction TB
     }
 
 
-    %% ======================
-    %% SERVER
-    %% ======================
+%% ======================
+%% SERVER
+%% ======================
     class GameSession {
         <<Singleton>>
         - static GameSession instance
@@ -86,12 +86,18 @@ direction TB
 
     class ServerMain {
         + static void main(String[])
+    %% Komentarz:
+    %% - tworzy ServerSocket
+    %% - akceptuje połączenia klientów
+    %% - tworzy ClientHandler
+    %% - rejestruje handler w GameSession
+    %% - uruchamia wątek handlera
     }
 
 
-    %% ======================
-    %% CLIENT
-    %% ======================
+%% ======================
+%% CLIENT
+%% ======================
     class ClientConnection {
         - Socket socket
         - BufferedReader in
@@ -108,15 +114,22 @@ direction TB
     }
 
 
-    %% ======================
-    %% RELATIONS
-    %% ======================
+%% ======================
+%% RELATIONS
+%% ======================
 
+%% SERVER RELATIONS
+    ServerMain --> ClientHandler : tworzy
+    ServerMain --> GameSession : rejestruje handler (registerPlayer)
+    GameSession --> ClientHandler : posiada (2 graczy)
     GameSession --> Board : posiada
-    GameSession --> ClientHandler : zarządza (2 graczy)
-    ClientHandler --> GameSession : używa
+
+%% LOGIC RELATIONS
+    ClientHandler --> GameSession : używa (ruchy, PASS, RESIGN)
     ClientHandler --> JsonUtil : używa
     ClientConnection --> JsonUtil : używa
+
+%% CLIENT RELATIONS
     ClientMain --> ClientConnection : używa
     ClientMain --> JsonUtil : używa
 ```
