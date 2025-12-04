@@ -18,11 +18,11 @@ src/
 
 └─ common/
 
-    ├─ Board.java
+│    ├─ Board.java
 
-    ├─ Move.java
+│    ├─ Move.java
 
-    └─ JsonUtil.java
+│    └─ JsonUtil.java
 
 Wzorce:
 
