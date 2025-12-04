@@ -1,20 +1,24 @@
 package lab4.common;
 
+/**
+ * DTO (Data Transfer Object) — Move: przesylamy jako JSON: {"row":R,"col":C,"player":P}
+ */
 public class Move {
-    public int x;
-    public int y;
+    public int row;
+    public int col;
     public int player;
 
-    public Move() {}
+    public Move() {} // zeby moc stworzyc Move i potem dopisac dane z JSON-a
 
-    public Move(int x, int y, int player) {
-        this.x = x;
-        this.y = y;
+    public Move(int row, int col, int player) {
+        this.row = row;
+        this.col = col;
         this.player = player;
     }
 
+    //do ewentualnej pomocy przy printach
     @Override
     public String toString() {
-        return "Move{x=" + x + ", y=" + y + ", player=" + player + "}";
+        return "Move[player=" + player + ", row=" + row + ", col=" + col + "]";
     }
 }
