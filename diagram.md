@@ -12,7 +12,7 @@ classDiagram
         + int player
         + Move()
         + Move(int row, int col, int player)
-        + toString() String
+        + String toString()
     }
 
     class Board {
@@ -20,33 +20,21 @@ classDiagram
         - int size
 
         + Board(int size)
-        + int getSize()
-        + synchronized int get(int r, int c)
-        + synchronized void set(int r, int c, int value)
-
-        + synchronized boolean isOnBoard(int r, int c)
-        + synchronized boolean isLegalMove(Move m, int player)
-        + synchronized boolean hasLiberties(int r, int c, boolean[][] visited)
-        + synchronized int removeDeadGroup(int r, int c)
-        + synchronized int removeCapturedStones(int player)
-
-        + synchronized int applyMoveAndCapture(int r, int c, int player)
-
         + synchronized int[][] getGridCopy()
         + synchronized void setGridFromCopy(int[][] src)
         + static boolean gridsEqual(int[][] a, int[][] b)
 
+        + synchronized int applyMoveAndCapture(int r, int c, int player)
+        - synchronized int removeGroup(int r, int c, int color)
+        - private boolean hasLiberties(int[][] boardCopy, int r, int c)
         + synchronized String toString()
     }
 
     class JsonUtil {
-        + String moveToJson(Move)
-        + Move jsonToMove(String)
-        + String boardToJson(Board)
-        + Board jsonToBoard(String)
-        + String wrap(String type, String payload)
-        + String unwrapType(String json)
-        + String unwrapPayload(String json)
+        + static String moveToJson(Move m)
+        + static Move jsonToMove(String json)
+        + static String boardToJson(Board b)
+        + static Board jsonToBoard(String json)
     }
 
 
@@ -57,19 +45,24 @@ classDiagram
         <<Singleton>>
         - static GameSession instance
         - Board board
-        - ClientHandler player1
-        - ClientHandler player2
+        - List~ClientHandler~ observers
         - int currentPlayer
-        - int passCount
-        - boolean gameEnded
+        - boolean started
+        - boolean gameOver
+        - int consecutivePasses
+        - int[][] previousBoard
 
-        + static GameSession getInstance()
-        + synchronized int registerPlayer(ClientHandler)
-        + synchronized void processMove(ClientHandler, Move)
-        + synchronized void playerPassed(ClientHandler)
-        + synchronized void playerResigned(ClientHandler)
-        + synchronized void notifyPlayers(String)
-        + synchronized Board getBoard()
+        + static synchronized GameSession getInstance(int boardSize)
+        + static synchronized GameSession getInstance()
+        + synchronized void register(ClientHandler h)
+        + synchronized void startGame()
+        - synchronized void notifyTurn()
+        + synchronized void broadcastBoard()
+        - synchronized void broadcastInfo(String msg)
+        + synchronized void applyMove(Move m, ClientHandler ch)
+        + synchronized void playerPassed(ClientHandler ch)
+        + synchronized void playerResigned(ClientHandler ch)
+        + synchronized void clientDisconnected(ClientHandler ch)
     }
 
     class ClientHandler {
@@ -77,21 +70,15 @@ classDiagram
         - BufferedReader in
         - PrintWriter out
         - int playerId
-        - boolean active
 
+        + ClientHandler(Socket socket, int playerId)
+        + int getPlayerId()
+        + void sendLine(String line)
         + void run()
-        + void sendLine(String)
-        + void close()
     }
 
     class ServerMain {
-        + static void main(String[])
-    %% Komentarz:
-    %% - tworzy ServerSocket
-    %% - akceptuje połączenia klientów
-    %% - tworzy ClientHandler
-    %% - rejestruje handler w GameSession
-    %% - uruchamia wątek handlera
+        + static void main(String[] args)
     }
 
 
@@ -104,32 +91,51 @@ classDiagram
         - PrintWriter out
 
         + ClientConnection(String host, int port)
-        + void sendLine(String)
-        + String readLine()
+        + void sendLine(String line)
+        + void sendMoveJson(String json)
+        + void startListening(MessageHandler handler)
         + void close()
     }
 
     class ClientMain {
-        + static void main(String[])
+        + static void main(String[] args)
     }
 
+%% MessageHandler is an internal interface of ClientConnection
+    class MessageHandler {
+        <<interface>>
+        + void onStart(int myId)
+        + void onBoard(Board b)
+        + void onYourTurn()
+        + void onOpponentTurn()
+        + void onInfo(String msg)
+        + void onError(String msg)
+        + void onGameOver(String msg)
+        + void onDisconnect()
+        + void onUnknown(String line)
+    }
 
 %% ======================
 %% RELATIONS
 %% ======================
 
-%% SERVER RELATIONS
-    ServerMain --> ClientHandler : tworzy
-    ServerMain --> GameSession : rejestruje handler (registerPlayer)
-    GameSession --> ClientHandler : posiada (2 graczy)
-    GameSession --> Board : posiada
+%% Server flow: ServerMain creates handlers and registers them in GameSession
+    ServerMain --> ClientHandler : creates
+    ServerMain --> GameSession : getInstance(boardSize) / register(handler)
 
-%% LOGIC RELATIONS
-    ClientHandler --> GameSession : używa (ruchy, PASS, RESIGN)
-    ClientHandler --> JsonUtil : używa
-    ClientConnection --> JsonUtil : używa
+%% GameSession manages handlers (Observer)
+    GameSession "1" --> "0..2" ClientHandler : observers (broadcastBoard / notifyTurn)
 
-%% CLIENT RELATIONS
-    ClientMain --> ClientConnection : używa
-    ClientMain --> JsonUtil : używa
+%% GameSession uses Board
+    GameSession --> Board : has
+
+%% ClientHandler uses GameSession and JsonUtil
+    ClientHandler --> GameSession : applyMove / playerPassed / playerResigned / clientDisconnected
+    ClientHandler --> JsonUtil : jsonToMove / boardToJson
+
+%% Client side relations
+    ClientMain --> ClientConnection : uses
+    ClientConnection --> MessageHandler : callback
+    ClientConnection --> JsonUtil : jsonToBoard / moveToJson
+    ClientMain --> JsonUtil : moveToJson
 ```

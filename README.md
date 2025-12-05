@@ -1,5 +1,3 @@
-lab4
-
 src/
 
 ├─ client/
@@ -32,7 +30,7 @@ DTO – Move, Board → to co idzie w JSON.
 
 Observer (wersja prymitywna) – serwer powiadamia dwóch klientów o zmianie plans
 
-Instrukcja:
+Instrukcja uruchomienia:
 
 javac .\lab4\client\*.java
 
@@ -44,7 +42,7 @@ plansza 19×19,
 
 Singleton: GameSession (jedna gra),
 
-DTO: Move, Board (wysyłane w JSON),
+DTO (Data Transfer Object): Move, Board (wysyłane w JSON),
 
 Observer (prymitywny): GameSession powiadamia ClientHandler o zmianach planszy,
 
@@ -62,18 +60,18 @@ interfejs konsolowy, który pokazuje planszę i komunikaty,
 
 obsługa błędów i rozłączeń,
 
-dokładnie 2 graczy.
-
-Dodatkowo:
-
-KO: implementacja zabrania natychmiastowego powrotu do pozycji sprzed ostatniego ruchu (porównanie aktualnej planszy do previousBoard). To blokuje klasyczny cykliczny Ko.
-
-Suicide: zabroniony — jeśli postawienie kamienia nie daje libertów i nie zabiera przeciwnika -> odrzucamy.
+Serwer akceptuje dokładnie 2 połączenia i potem uruchamia grę.
 
 Capture: zadziała dla otoczonych grup (rekursywnie / stack).
 
 Po 2x PASS gra się kończy (GAME_OVER Both players passed). Nie zaimplementowałem automatycznego liczenia punktów — mogę dodać (japońskie/chińskie) jeśli chcesz.
 
-Obsługa błędów: serwer odsyła ERROR ... klientowi; po rozłączeniu przeciwnika gra kończy się i drugi gracz dostaje ERROR Opponent disconnected oraz GAME_OVER ....
+Sposób działania komunikacji: (!!!)
 
-Serwer akceptuje dokładnie 2 połączenia i potem uruchamia grę.
+Klient → serwer
+
+ClientConnection wysyla np. obiekt Move zamieniony na JSON w JsonUtil; odbiera ClientHandler
+
+Serwer → klient
+
+wysyła ClientHandler (lub GameSession za jego pomocą); odbiera ClientConnection
