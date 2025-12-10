@@ -132,6 +132,9 @@ classDiagram
 %% ClientHandler uses GameSession and JsonUtil
     ClientHandler --> GameSession : applyMove / playerPassed / playerResigned / clientDisconnected
     ClientHandler --> JsonUtil : jsonToMove / boardToJson
+    
+%% Server–Client communication
+    ClientHandler <--> ClientConnection : network communication
 
 %% Client side relations
     ClientMain --> ClientConnection : uses
