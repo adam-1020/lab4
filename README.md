@@ -32,7 +32,19 @@ Observer (wersja prymitywna) – serwer powiadamia dwóch klientów o zmianie pl
 
 Instrukcja uruchomienia:
 
+w src\main\java:
+
 javac .\lab4\client\*.java
+
+javac .\lab4\server\*.java
+
+nastęnie odpalamy serwer:
+
+java lab4.server.ServerMain
+
+i odpalamy dwóch klientów(graczy):
+
+java lab4.client.ClientMain
 
 java lab4.client.ClientMain
 
@@ -64,7 +76,7 @@ Serwer akceptuje dokładnie 2 połączenia i potem uruchamia grę.
 
 Capture: zadziała dla otoczonych grup (rekursywnie / stack).
 
-Po 2x PASS gra się kończy (GAME_OVER Both players passed). Nie zaimplementowałem automatycznego liczenia punktów — mogę dodać (japońskie/chińskie) jeśli chcesz.
+Po 2x PASS gra się kończy (GAME_OVER Both players passed). Nie ma zaimplementowanego automatycznego liczenia punktów, dodamy później.
 
 Sposób działania komunikacji: (!!!)
 
