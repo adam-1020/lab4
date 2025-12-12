@@ -141,4 +141,9 @@ classDiagram
     ClientConnection --> MessageHandler : callback
     ClientConnection --> JsonUtil : jsonToBoard / moveToJson
     ClientMain --> JsonUtil : moveToJson
+%% Move dependencies
+    ClientMain ..> Move : uses
+    JsonUtil ..> Move : uses
+    ClientHandler ..> Move : uses
+    GameSession ..> Move : uses
 ```
